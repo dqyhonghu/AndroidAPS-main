@@ -49,22 +49,10 @@ class XdripSourcePlugin @Inject constructor(
     aapsLogger, rh, injector
 ), BgSource, XDripSource {
 
-    private var advancedFiltering = false
+    private var advancedFiltering = true  // 设置为 true
     override var sensorBatteryLevel = -1
 
     override fun advancedFilteringSupported(): Boolean = advancedFiltering
-
-    private fun detectSource(glucoseValue: GlucoseValue) {
-        advancedFiltering = arrayOf(
-            GlucoseValue.SourceSensor.DEXCOM_NATIVE_UNKNOWN,
-            GlucoseValue.SourceSensor.DEXCOM_G6_NATIVE,
-            GlucoseValue.SourceSensor.DEXCOM_G5_NATIVE,
-            GlucoseValue.SourceSensor.DEXCOM_G6_NATIVE_XDRIP,
-            GlucoseValue.SourceSensor.DEXCOM_G5_NATIVE_XDRIP,
-            GlucoseValue.SourceSensor.DEXCOM_G6_G5_NATIVE_XDRIP,
-            GlucoseValue.SourceSensor.DEXCOM_G7_NATIVE_XDRIP
-        ).any { it == glucoseValue.sourceSensor }
-    }
 
     // cannot be inner class because of needed injection
     class XdripSourceWorker(
@@ -122,7 +110,7 @@ class XdripSourcePlugin @Inject constructor(
                 .blockingGet()
                 .also { result ->
                     result.all().forEach {
-                        xdripSourcePlugin.detectSource(it)
+                        // xdripSourcePlugin.detectSource(it)
                         aapsLogger.debug(LTag.DATABASE, "Inserted bg $it")
                     }
                     result.sensorInsertionsInserted.forEach {
